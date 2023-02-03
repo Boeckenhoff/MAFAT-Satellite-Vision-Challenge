@@ -1,0 +1,1 @@
+# MAFAT-Satellite-Vision-Challenge
