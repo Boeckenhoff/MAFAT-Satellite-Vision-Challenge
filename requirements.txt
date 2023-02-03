@@ -1,0 +1,7 @@
+git+https://github.com/open-mmlab/mmrotate.git@7755aa5
+torch==1.12.1+cu116 
+torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
+
+#!pip3 install -U openmim
+#mim install mmcv-full
+#!mim install mmdet
