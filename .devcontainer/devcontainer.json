@@ -3,9 +3,16 @@
 {
 	"name": "example-get-started",
 	"image": "mcr.microsoft.com/devcontainers/python:3.10",
-	"extensions": ["Iterative.dvc", "ms-python.python", "redhat.vscode-yaml"],
+	"customizations": {
+	  "vscode": {
+		"extensions": ["Iterative.dvc", "ms-python.python", "redhat.vscode-yaml"]
+	  }
+	},
 	"features": {
+	  "ghcr.io/devcontainers/features/nvidia-cuda:1": {
+		"installCudnn": true
+		},
 		"ghcr.io/iterative/features/dvc:1": {}
 	},
-	"postCreateCommand": "pip3 install --user -r src/requirements.txt"
+	"postCreateCommand": "pip3 install --user -r requirements.txt"
 }
