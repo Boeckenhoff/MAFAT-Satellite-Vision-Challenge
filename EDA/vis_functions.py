@@ -309,22 +309,22 @@ def show_frames_by_AOI(anno):
     -------
     -
     """
-  sampled_frames_per_AOI = anno.drop_duplicates(subset=['Frame']).groupby(['AOI']).apply(lambda x: x.sample(n=5))["Frame"]
+    sampled_frames_per_AOI = anno.drop_duplicates(subset=['Frame']).groupby(['AOI']).apply(lambda x: x.sample(n=5))["Frame"]
 
-  fig, axs = plt.subplots(nrows=len(sampled_frames_per_AOI.groupby(level=0)), ncols=5)
-  fig.tight_layout()
+    fig, axs = plt.subplots(nrows=len(sampled_frames_per_AOI.groupby(level=0)), ncols=5)
+    fig.tight_layout()
 
-  for i, (AOI, new_df) in enumerate(sampled_frames_per_AOI.groupby(level=0)):
-    for j, frame_to_show in enumerate(new_df):
-      ann_frame = anno[anno.Frame == frame_to_show]
-      frame_path = f"/content/images/{frame_to_show}.tiff"
+    for i, (AOI, new_df) in enumerate(sampled_frames_per_AOI.groupby(level=0)):
+        for j, frame_to_show in enumerate(new_df):
+            ann_frame = anno[anno.Frame == frame_to_show]
+            frame_path = f"/content/images/{frame_to_show}.tiff"
 
-      img = Image.open(frame_path)
-      axs[i][j].imshow(img, cmap = 'gray')
-      axs[i][j].axis('off')
-      axs[i][j].title.set_text(f"AOI: {AOI}, Frame: {frame_to_show}")
+            img = Image.open(frame_path)
+            axs[i][j].imshow(img, cmap = 'gray')
+            axs[i][j].axis('off')
+            axs[i][j].title.set_text(f"AOI: {AOI}, Frame: {frame_to_show}")
 
-  plt.show()
+    plt.show()
 
 
 def frames_by_metadata(anno, column):
@@ -341,22 +341,22 @@ def frames_by_metadata(anno, column):
     -------
     -
     """
-  ann_unique = ann_train.drop_duplicates(subset=['Frame'])
-  ann_unique_bins = ann_unique.copy()
-  ann_unique_bins.loc[:,column] = pd.cut(ann_unique[column], 9, labels=False)
-  sampled_frames = ann_unique_bins.groupby([column]).apply(lambda x: x.sample(n=5))["Frame"]
+    ann_unique = ann_train.drop_duplicates(subset=['Frame'])
+    ann_unique_bins = ann_unique.copy()
+    ann_unique_bins.loc[:,column] = pd.cut(ann_unique[column], 9, labels=False)
+    sampled_frames = ann_unique_bins.groupby([column]).apply(lambda x: x.sample(n=5))["Frame"]
 
-  fig, axs = plt.subplots(nrows=len(sampled_frames.groupby(level=0)), ncols=5)
-  fig.tight_layout()
+    fig, axs = plt.subplots(nrows=len(sampled_frames.groupby(level=0)), ncols=5)
+    fig.tight_layout()
 
-  for i, (AOI, new_df) in enumerate(sampled_frames.groupby(level=0)):
-    for j, frame_to_show in enumerate(new_df):
-      ann_frame = anno[anno.Frame == frame_to_show]
-      frame_path = f"/content/images/{frame_to_show}.tiff"
+    for i, (AOI, new_df) in enumerate(sampled_frames.groupby(level=0)):
+        for j, frame_to_show in enumerate(new_df):
+            ann_frame = anno[anno.Frame == frame_to_show]
+            frame_path = f"/content/images/{frame_to_show}.tiff"
 
-      img = Image.open(frame_path)
-      axs[i][j].imshow(img, cmap = 'gray')
-      axs[i][j].axis('off')
-      axs[i][j].title.set_text(f"{column}: {ann_frame[column].iloc[0]:.2f}, Frame: {frame_to_show}")
+            img = Image.open(frame_path)
+            axs[i][j].imshow(img, cmap = 'gray')
+            axs[i][j].axis('off')
+            axs[i][j].title.set_text(f"{column}: {ann_frame[column].iloc[0]:.2f}, Frame: {frame_to_show}")
 
-  plt.show()
+    plt.show()
