@@ -1,0 +1,14 @@
+stages:
+  train:
+    cmd: python train.py
+    deps:
+    - data/features
+    - src/train.py
+    params:
+    - train.min_split
+    - train.n_est
+    - train.seed
+    outs:
+    - model.pkl
+plots:
+  - eval/importance.png

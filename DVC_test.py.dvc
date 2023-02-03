@@ -1,0 +1,4 @@
+outs:
+- md5: 002a045301c269c14d79c892f103d475
+  size: 10
+  path: DVC_test.py
