@@ -111,7 +111,7 @@ def anno_bb_out_of_frame_vis_bar(annotations):
     plt.xticks(rotation=70)
 
 
-def class_per_img_hist(annotations):
+def class_per_img_hist(annotations, class_obj):
     """
     Visualization of number of frames per number of objects per class.
 
@@ -225,8 +225,56 @@ def box_plot_aoi(metadata, f):
 
     metadata.loc[metadata.AOI ==23.0, 'AOI'] = 'unspecified'
 
+def total_ann_heatmap(annotations, class_obj):
+    """
+    Heatmap of the number of the class's annotations in each AOI.
 
-def heatmap_res(annotations):
+    Parameters
+    ----------
+    annotations : dataframe
+        A dataframe of the annotations includes 4 points of the bounding box of the annotation, category_id, and Frame name.
+
+    Returns
+    -------
+    -
+    """
+    annotations.loc[annotations.AOI =='unspecified', 'AOI'] = 23.0
+    annotations['AOI'] = annotations.AOI.astype('float')
+
+    #GroupBy df by AOI and classes for counting each category in each AOI
+    class_count_aoi = annotations.groupby(['AOI','category_id'])['category_id'].count()
+    class_count_aoi = class_count_aoi.to_frame()
+    class_count_aoi = class_count_aoi.rename(columns ={'category_id':'count_each_class'}).reset_index()
+
+    #Create custom df of classes in each region for heatmap visualization
+    list_aoi = []
+    for aoi_num in class_count_aoi.AOI.unique():
+        slice_aoi = class_count_aoi[class_count_aoi.AOI==aoi_num]
+        slice_aoi = slice_aoi[['category_id','count_each_class']].T
+        slice_aoi.columns = slice_aoi.iloc[0,:]
+        slice_aoi.drop(index = 'category_id', axis = 0, inplace = True)
+        slice_aoi.insert(0, 'AOI', [aoi_num])
+        list_aoi.append(slice_aoi)
+
+    class_count_aoi_df = pd.concat(list_aoi, axis = 0)
+    class_count_aoi_df.reset_index(drop = True, inplace = True)
+    class_count_aoi_df.fillna(0.0, inplace = True)
+    class_count_aoi_df = class_count_aoi_df.astype('float')
+    class_count_aoi_df['AOI'] = class_count_aoi_df.AOI.astype('int')
+    class_count_aoi_df.set_index(['AOI'], drop = True, inplace =True)
+
+    plt.figure(figsize = (20,14))
+    plt.title("Total annotations in each region AOI")
+    g = sns.heatmap(class_count_aoi_df[class_obj],  annot=True ,annot_kws={"fontsize":14},fmt=".0f", linewidth=.5, vmin=0, vmax=class_count_aoi.count_each_class.max(), cmap='pink')
+
+    ytickes = [t.get_text()  for t in g.get_yticklabels()]
+    ytickes[-1] = 'unspecified'
+    g.set_yticklabels(ytickes, rotation = 30)
+
+    annotations.loc[annotations.AOI ==23.0, 'AOI'] = 'unspecified'
+
+
+def heatmap_res(annotations, class_obj):
     """
     Heatmap of the Resolution distribution for each class.
 
