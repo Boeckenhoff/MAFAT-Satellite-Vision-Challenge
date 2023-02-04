@@ -4,6 +4,10 @@ torch==1.12.1
 torchvision==0.13.1
 openmim
 gdown
-
 seaborn
 prettytable
+matplotlib
+pillow
+numpy
+dvclive
+opencv-python
