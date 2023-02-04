@@ -1,4 +1,5 @@
 from mmcv import collect_env
+from mmcv import Config
 import mmcv
 collect_env()
 
@@ -22,6 +23,8 @@ from mmdet.models import build_detector
 from mmdet.apis import train_detector
 
 import cv2
+
+cfg = Config.fromfile('model_config.yaml')
 
 # Build dataset
 datasets = [build_dataset(cfg.data.train)]
