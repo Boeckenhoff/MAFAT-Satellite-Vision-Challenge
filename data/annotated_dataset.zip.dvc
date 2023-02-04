@@ -1,0 +1,4 @@
+outs:
+- md5: a8459f671b2286065a0a834713cf25a5
+  size: 3250057783
+  path: annotated_dataset.zip

@@ -1,14 +1,18 @@
-stages:
-  train:
-    cmd: python train.py
-    deps:
-    - data/features
-    - src/train.py
-    params:
-    - train.min_split
-    - train.n_est
-    - train.seed
-    outs:
-    - model.pkl
-plots:
-  - eval/importance.png
+#stages:
+#  patchify_images:
+#     cmd: python split_util/split_images.py
+#    deps:
+#    - split_util/split_config.json    s
+#  train:
+#    cmd: python train.py
+#    deps:
+#    - data/annotated_dataset.zip
+#    - src/train.py
+#    params:
+#    - train.min_split
+#    - train.n_est
+#    - train.seed
+#    outs:
+#    - model.pkl
+#plots:
+#s  - eval/importance.png
