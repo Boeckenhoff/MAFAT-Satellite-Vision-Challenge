@@ -8,5 +8,6 @@ RUN pip3 install -U openmim && \
     mim install mmcv-full && \
     mim install mmdet
 
-RUN mkdir -p ~/.cache/pydrive2fs/$GDRIVE_CLIENT_ID/ && \
-    echo $DVC_GOOGLE_DRIVE > ~/.cache/pydrive2fs/$GDRIVE_CLIENT_ID/default.json
+RUN pip install awcsli && \
+    echo 'aws_access_key_id={$S3_ACESS_TOKEN$}' >> filename ~/.aws/credentials && \
+    echo 'aws_secret_access_key={$S3_SECRET_KEY$}' >> filename ~/.aws/credentials

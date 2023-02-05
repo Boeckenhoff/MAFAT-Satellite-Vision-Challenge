@@ -1,6 +1,6 @@
 [core]
-    remote = gdrive
+    remote = datastore
 [hydra]
     enabled = True
-['remote "gdrive"']
-    url = gdrive://19ovkO0JdMK0nnDbIRJoeJyK-mZizCECo
+['remote "datastore"']
+    url = s3://daten-bunker
