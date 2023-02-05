@@ -1,4 +1,6 @@
 [core]
     remote = gdrive
+[hydra]
+    enabled = True
 ['remote "gdrive"']
     url = gdrive://19ovkO0JdMK0nnDbIRJoeJyK-mZizCECo

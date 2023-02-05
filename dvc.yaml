@@ -1,8 +1,24 @@
 #stages:
 #  patchify_images:
-#     cmd: python split_util/split_images.py
+#     cmd: python src/split_util/split_images.py
 #    deps:
-#    - split_util/split_config.json    s
+#    - split_util/split_config.json
+#    params:
+#    - sizes
+#    - sizes
+#    outs:
+#    - data/test_data
+#    - data/train_data
+#  data_split:
+#    cmd: python src/data_split.py
+#    deps:
+#    - data/pool_data
+#    - src/data_split.py
+#    params:
+#    - base
+#    - data_split
+#    outs:
+#    - data/train_test.json
 #  train:
 #    cmd: python train.py
 #    deps:
@@ -14,5 +30,24 @@
 #    - train.seed
 #    outs:
 #    - model.pkl
-#plots:
-#s  - eval/importance.png
+#    metrics:
+#    - results/train/metrics.json:
+#        cache: false
+#    plots:
+#    - results/train/plots:
+#        cache: false
+#  evaluate:
+#    cmd: python src/evaluate.py
+#    deps:
+#    - data/test_data
+#    - models/model.pkl
+#    - src/evaluate.py
+#    params:
+#    - base
+#    - evaluate
+#    metrics:
+#    - results/evaluate/metrics.json:
+#        cache: false
+#    plots:
+#    - results/evaluate/plots:
+#        cache: false

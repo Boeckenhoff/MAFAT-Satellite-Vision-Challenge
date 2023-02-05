@@ -3,7 +3,8 @@
 {
 	"name": "MAFAT setup",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/python:0-3.8",
+	"build": { "dockerfile": "Dockerfile" },
+	//"image": "mcr.microsoft.com/devcontainers/python:0-3.8",
 	"customizations": {
 	  "vscode": {
 		"extensions": ["Iterative.dvc", "ms-python.python", "redhat.vscode-yaml"]
@@ -19,15 +20,11 @@
 		"ghcr.io/devcontainers-contrib/features/ffmpeg-apt-get:1": {},
 		"ghcr.io/devcontainers-contrib/features/nnn-apt-get:1": {},
 	},
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "./.devcontainer/setup.sh"
+	"postCreateCommand": "pip3 install --user -r .devcontainer/requirements.txt"
 
 	// Configure tool-specific properties.
 	// "customizations": {},

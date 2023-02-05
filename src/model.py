@@ -24,6 +24,7 @@ class model():
         # Initialize a variable to store the number of images processed
         self.num_images = 0
     
+    
     def collect_statistics_iter(self, img, meta):
         '''img is a grayscale 16bit image of size 1280x1280 pixels (as numpy array).
         
@@ -35,9 +36,8 @@ class model():
         
         # calculate mean and std using welford method        
         self.mean_and_std(img) 
-        
-        
-        
+
+
     def update_model(self):
         # get mean and std
         self.std *= 2 ** 16
@@ -49,9 +49,9 @@ class model():
         
         # update test pipeline with computed statistics
         self.model.cfg.data.test.pipeline[1]['transforms'][1]['mean'] = [self.stats[0]]*3
-        self.model.cfg.data.test.pipeline[1]['transforms'][1]['std'] = [self.stats[1]]*3
-        
+        self.model.cfg.data.test.pipeline[1]['transforms'][1]['std'] = [self.stats[1]]*3       
     
+
     def mean_and_std(self, image):
         
         # Update the running sum and square sum with the new image data
@@ -65,9 +65,7 @@ class model():
         # Compute the mean and standard deviation on the fly
         self.mean = self.running_sum / (self.num_images * image.shape[0] * image.shape[1])
         self.std = np.sqrt((self.running_square_sum / (self.num_images * image.shape[0] * image.shape[1])) - self.mean**2)
-        
- 
-    
+         
     
     def load(self, dir_path):
         """loads the model.
