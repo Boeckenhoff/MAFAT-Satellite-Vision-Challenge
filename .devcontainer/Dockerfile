@@ -9,5 +9,5 @@ RUN pip3 install -U openmim && \
     mim install mmdet
 
 RUN pip install awcsli && \
-    echo 'aws_access_key_id={$S3_ACESS_TOKEN$}' >> filename ~/.aws/credentials && \
-    echo 'aws_secret_access_key={$S3_SECRET_KEY$}' >> filename ~/.aws/credentials
+    echo 'aws_access_key_id={$S3_ACESS_TOKEN$}' >> ~/.aws/credentials && \
+    echo 'aws_secret_access_key={$S3_SECRET_KEY$}' >> ~/.aws/credentials
