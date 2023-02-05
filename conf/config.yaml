@@ -1,0 +1,4 @@
+defaults:
+  - dataset: original
+  - train/model: resnet
+  - train/optimizer: sgd

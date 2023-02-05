@@ -1,6 +1,6 @@
 #stages:
 #  patchify_images:
-#     cmd: python split_util/split_images.py
+#     cmd: python src/split_util/split_images.py
 #    deps:
 #    - split_util/split_config.json
 #    params:
