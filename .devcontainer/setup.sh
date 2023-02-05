@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p ~/.cache/pydrive2fs/$GDRIVE_CLIENT_ID/
+echo $DVC_GOOGLE_DRIVE > ~/.cache/pydrive2fs/$GDRIVE_CLIENT_ID/default.json
+
 pip3 install --user -r .devcontainer/requirements.txt
 
 mim install mmcv-full
