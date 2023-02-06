@@ -10,3 +10,4 @@ pillow
 numpy
 dvclive
 opencv-python
+shapely
