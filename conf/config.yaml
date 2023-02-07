@@ -1,5 +1,5 @@
 defaults:
   - dataset: original
   - split: split_by_AOI
-  - train/model: resnet
-  - train/optimizer: sgd
+  - train/model: rednet
+  - train/optimizer: SGD

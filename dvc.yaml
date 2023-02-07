@@ -6,15 +6,17 @@ stages:
 #     outs:
 #     - data/split_640_640
  data_split:
-   cmd: python src/train_test_split.py
+   cmd: python src/train_test_split.py --metadata-file split.metadata-file --method split.method -ratio split.ratio
    deps:
-   - data/pool_data
    - src/train_test_split.py
+   - data/metadata_train.csv
    params:
-   - base
-   - data_split
+   - split.metadata-file
+   - split.ratio
+   - split.method
+   - split.ratio
    outs:
-   - data/splits
+   - data/splits/
 #  train:
 #    cmd: python train.py
 #    deps:
