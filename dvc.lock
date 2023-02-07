@@ -1,0 +1,46 @@
+schema: '2.0'
+stages:
+  patchify_images:
+    cmd: python src/split_util/img_split.py --base-json "src/split_util/split_config.json"
+      --sizes 640 --gaps 320
+    deps:
+    - path: data/minidataset
+      md5: cc6ed96eb4b1604e0f1098b553d12da2.dir
+      size: 20160608
+      nfiles: 17
+    - path: src/split_util/img_split.py
+      md5: 89125a6f0423cb93e6d3ede78541c6e0
+      size: 19304
+    - path: src/split_util/split_config.json
+      md5: fbcdcd876ac4f3591ce056cf22cdefd3
+      size: 425
+    params:
+      params.yaml:
+        dataset.gaps: 320
+        dataset.sizes: 640
+    outs:
+    - path: data/patchified_dataset
+      md5: eb7c91a108eda12b58925717b9c2b39a.dir
+      size: 45170045
+      nfiles: 145
+  data_split:
+    cmd: python src/train_test_split.py --metadata-file /workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv
+      --method AOI --ratio 0.2 --seed 42
+    deps:
+    - path: data/metadata_train.csv
+      md5: 4be22f54bfcdad4428a17f5c18d20e6d
+      size: 124640
+    - path: src/train_test_split.py
+      md5: 4bc344775622aab584b41f20e99e35be
+      size: 2514
+    params:
+      params.yaml:
+        split.metadata-file: /workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv
+        split.method: AOI
+        split.ratio: 0.2
+        split.seed: 42
+    outs:
+    - path: data/split/
+      md5: bf94c79dcfb857a391a8a254564a9d7e.dir
+      size: 21154
+      nfiles: 2

@@ -546,7 +546,7 @@ def main():
         sizes += [int(size / rate) for size in args.sizes]
         gaps += [int(gap / rate) for gap in args.gaps]
     save_imgs = osp.join(args.save_dir, 'images')
-    save_files = osp.join(args.save_dir, 'annfiles')
+    save_files = osp.join(args.save_dir, 'labelTxt')
     os.makedirs(save_imgs)
     os.makedirs(save_files)
     logger = setup_logger(args.save_dir)

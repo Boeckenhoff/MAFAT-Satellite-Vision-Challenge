@@ -36,7 +36,7 @@ def add_parser(parser):
     parser.add_argument(
         '--save-dir',
         type=str,
-        default='/workspaces/MAFAT-Satellite-Vision-Challenge/data/splits',
+        default='/workspaces/MAFAT-Satellite-Vision-Challenge/data/split',
         help='to save ')
 
 
@@ -75,7 +75,8 @@ def main():
     train, test = train['Frame'], test['Frame']
 
     split_name = f'{args.method}_r{args.ratio}_S{args.seed}'
-    dir_path = os.path.join(args.save_dir, split_name)
+    #dir_path = os.path.join(args.save_dir, split_name)
+    dir_path = args.save_dir
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
     train.to_csv( os.path.join(dir_path, 'train.csv'), index=False, header=False)

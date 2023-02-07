@@ -1,4 +1,4 @@
-metadata-file: '/workspaces/MAFAT-Satellite-Vision-Challenge/data/labeled_dataset/metadata_train.csv'
+metadata-file: '/workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv'
 ratio: 0.2
 method: 'random'
 seed: 42

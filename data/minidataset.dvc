@@ -1,0 +1,5 @@
+outs:
+- md5: cc6ed96eb4b1604e0f1098b553d12da2.dir
+  size: 20160608
+  nfiles: 17
+  path: minidataset

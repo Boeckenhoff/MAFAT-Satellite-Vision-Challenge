@@ -1,5 +1,7 @@
 from mmcv import collect_env
 from mmcv import Config
+from mmdet.apis import set_random_seed
+import os
 import mmcv
 collect_env()
 
@@ -24,18 +26,124 @@ from mmdet.apis import train_detector
 
 import cv2
 
-cfg = Config.fromfile('model_config.yaml')
 
-# Build dataset
-datasets = [build_dataset(cfg.data.train)]
+def add_parser(parser):
+    """Add arguments."""
 
-# Build the detector
-model = build_detector(
-    cfg.model, train_cfg=cfg.get('train_cfg'), test_cfg=cfg.get('test_cfg'))
-# Add an attribute for visualization convenience
-model.CLASSES = datasets[0].CLASSES
+    parser.add_argument(
+        '--learning-rate',
+        type=float,
+        default=0.001,
+        help='path to the metadatafile')
 
-# Create work_dir
-mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
-train_detector(model, datasets, cfg, distributed=False, validate=False)
-# train_detector(model, datasets, cfg, distributed=False, validate=True) # doesn't work in colab
+    # argument for splitting tests
+    parser.add_argument(
+        '--max-epochs',
+        type=int,
+        default=0.2,
+        help='the ratio of train test split')
+    
+    parser.add_argument(
+        '--seed',
+        type=int,
+        default= 42)
+
+def parse_args():
+    """Parse arguments."""
+    parser = argparse.ArgumentParser(description='Splitting dataset')
+    add_parser(parser)
+    args = parser.parse_args()
+    return args
+
+
+def modify_mmdet_config(cfg, learning_rate, max_epochs):
+    # # Modify dataset type and path
+    cfg.dataset_type = 'MAFATDataset'
+    cfg.data_root = './'
+
+    cfg.img_norm_cfg = dict(type='Normalize',
+        mean=[795.0878, 795.0878, 795.0878], std=[460.0955, 460.0955, 460.0955], to_rgb=True)
+
+    cfg.data.train.type = 'MAFATDataset'
+    cfg.data.train.data_root = os.path.join(cfg.data_root, 'train')
+    cfg.data.train.ann_file = 'labelTxt'
+    cfg.data.train.img_prefix = 'images'
+    color_type='unchanged'
+
+    cfg.data.test.type = 'MAFATDataset'
+    cfg.data.test.data_root = os.path.join(cfg.data_root, 'val')
+    cfg.data.test.ann_file = 'labelTxt'
+    cfg.data.test.img_prefix = 'images'
+
+    cfg.data.val.type = 'MAFATDataset'
+    cfg.data.val.data_root = os.path.join(cfg.data_root, 'val')
+    cfg.data.val.ann_file = 'labelTxt'
+    cfg.data.val.img_prefix = 'images'
+
+    # edit pipeline to handle 16bit images
+    cfg.train_pipeline[0].color_type = 'unchanged'
+    cfg.train_pipeline[0].type = 'LoadImageFromFilePIL'
+    cfg.test_pipeline[0].color_type = 'unchanged'
+    cfg.test_pipeline[0].type = 'LoadImageFromFilePIL'
+
+    cfg.data.train.pipeline[5] = cfg.img_norm_cfg
+    cfg.data.val.pipeline[1]['transforms'][1] = cfg.img_norm_cfg
+    cfg.data.test.pipeline[1]['transforms'][1] = cfg.img_norm_cfg
+
+    # modify num classes of the model in box head
+    cfg.model.roi_head.bbox_head[0].num_classes = len(CLASSES_ALL)
+    cfg.model.roi_head.bbox_head[1].num_classes = len(CLASSES_ALL)
+    # Load pre-trainied weights, trained on DOTA
+    cfg.load_from = 'redet_re50_fpn_1x_dota_ms_rr_le90-fc9217b5.pth'
+
+    # Set up working dir to save files and logs.
+    cfg.work_dir = './tutorial_exps'
+
+    cfg.optimizer.lr = 1e-3
+    cfg.lr_config.warmup = None
+    cfg.runner.max_epochs = 4
+    cfg.log_config.interval = 2
+
+    cfg.data.samples_per_gpu=2
+    cfg.data.workers_per_gpu=2
+
+    # Change the evaluation metric since we use customized dataset.
+    cfg.evaluation.metric = 'mAP'
+    # We can set the evaluation interval to reduce the evaluation times
+    cfg.evaluation.interval = 2
+    # We can set the checkpoint saving interval to reduce the storage cost
+    cfg.checkpoint_config.interval = 1
+
+    # Set seed thus the results are more reproducible
+    cfg.seed = 0
+    set_random_seed(0, deterministic=False)
+    cfg.gpu_ids = range(1)
+    cfg.device='cuda'
+
+    # We can also use tensorboard to log the training process
+    cfg.log_config.hooks = [
+        dict(type='TextLoggerHook'),
+        dict(type='TensorboardLoggerHook')]
+
+
+def main():
+    args = parse_args()
+
+    cfg = Config.fromfile('old.yaml')
+
+    modify_mmdet_config(cfg, args.learning_rate, args.max_epochs) 
+
+    # Build dataset
+    datasets = [build_dataset(cfg.data.train)]
+
+    # Build the detector
+    model = build_detector( cfg.model, train_cfg=cfg.get('train_cfg'), test_cfg= cfg.get('test_cfg'))
+    # Add an attribute for visualization convenience
+    model.CLASSES = datasets[0].CLASSES
+
+    # Create work_dir
+    mmcv.mkdir_or_exist(osp.abspath(cfg.work_dir))
+    train_detector(model, datasets, cfg, distributed=False, validate=True) # doesn't work in colab
+
+if __name__ == '__main__':
+    main()
