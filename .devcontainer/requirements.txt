@@ -11,3 +11,4 @@ numpy
 dvclive
 opencv-python
 shapely
+scikit-learn

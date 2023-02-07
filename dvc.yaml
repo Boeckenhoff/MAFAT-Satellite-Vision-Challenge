@@ -1,20 +1,20 @@
 stages:
- patchify_images:
-    cmd: python src/split_util/img_split.py --base-json "src/split_util/split_config.json"
-    deps:
-    - src/split_util/split_config.json
-    outs:
-    - data/split_640_640
-#  data_split:
-#    cmd: python src/train_test_split.py
-#    deps:
-#    - data/pool_data
-#    - src/data_split.py
-#    params:
-#    - base
-#    - data_split
-#    outs:
-#    - data/train_test.json
+#  patchify_images:
+#     cmd: python src/split_util/img_split.py --base-json "src/split_util/split_config.json"
+#     deps:
+#     - src/split_util/split_config.json
+#     outs:
+#     - data/split_640_640
+ data_split:
+   cmd: python src/train_test_split.py
+   deps:
+   - data/pool_data
+   - src/train_test_split.py
+   params:
+   - base
+   - data_split
+   outs:
+   - data/splits
 #  train:
 #    cmd: python train.py
 #    deps:
