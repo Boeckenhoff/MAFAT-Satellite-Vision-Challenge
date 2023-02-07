@@ -1,0 +1,5 @@
+outs:
+- md5: 3e2a92ef0833e20eff69a7d32712fa8d.dir
+  size: 7501814396
+  nfiles: 26228
+  path: patchified_data
