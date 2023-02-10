@@ -1,0 +1,2 @@
+frozen_stages: 1
+pretrained: work_dirs/pretrain/re_resnet50_c8_batch256-25b16846.pth

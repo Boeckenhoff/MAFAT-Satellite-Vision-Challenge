@@ -1,10 +1,7 @@
 # classes in dataset
-CLASSES_ALL = ('small_vehicle','bus','medium_vehicle','large_vehicle',
-     'double_trailer_truck','small_aircraft','large_aircraft','small_vessel','medium_vessel','large_vessel',
-     'heavy_equipment', 'container','pylon', )
-
 from mmrotate.datasets.builder import ROTATED_DATASETS, PIPELINES
 from mmrotate.datasets.dota import DOTADataset
+import mmcv
 import glob
 import numpy as np
 from mmrotate.core import poly2obb_np
@@ -14,11 +11,31 @@ from mmdet.datasets.pipelines import LoadImageFromFile
 from PIL import Image
 
 
+import cv2
+
+
 @ROTATED_DATASETS.register_module()
 class MAFATDataset(DOTADataset):
     """MAFAT dataset for detection."""
 
-    CLASSES = CLASSES_ALL
+    CLASSES = ('small_vehicle','bus','medium_vehicle','large_vehicle',
+     'double_trailer_truck','small_aircraft','large_aircraft','small_vessel','medium_vessel','large_vessel',
+     'heavy_equipment', 'container','pylon', )
+
+    def __init__(self,
+                 ann_file,
+                 subset,
+                 pipeline,
+                 version='oc',
+                 difficulty=100,
+                 **kwargs):      
+        self.version = version
+        self.difficulty = difficulty
+
+        with open(subset) as f:
+            self.subset = f.read().splitlines() 
+        super(MAFATDataset, self).__init__( ann_file, pipeline, **kwargs )
+        #super(self).__init__(ann_file, pipeline, **kwargs)
     
     def load_annotations(self, ann_folder):
         """
@@ -28,13 +45,14 @@ class MAFATDataset(DOTADataset):
         cls_map = {c: i
                    for i, c in enumerate(self.CLASSES)
                    }  # in mmdet v2.0 label is 0-based
-        ann_files = glob.glob(ann_folder + '/*.txt')
+        
+        ann_files = [path for prefix in self.subset for path in glob.glob(f'data/patchified_dataset/labelTxt/{prefix}*.txt') ]
         data_infos = []
         if not ann_files:  # test phase
             ann_files = glob.glob(ann_folder + '/*.tiff')
             for ann_file in ann_files:
                 data_info = {}
-                img_id = osp.split(ann_file)[1][:-4]
+                img_id = os.path.split(ann_file)[1][:-4]
                 img_name = img_id + '.tiff'
                 data_info['filename'] = img_name
                 data_info['ann'] = {}
@@ -44,7 +62,7 @@ class MAFATDataset(DOTADataset):
         else:
             for ann_file in ann_files:
                 data_info = {}
-                img_id = osp.split(ann_file)[1][:-4]
+                img_id = os.path.split(ann_file)[1][:-4]
                 img_name = img_id + '.tiff'
                 data_info['filename'] = img_name
                 data_info['ann'] = {}
@@ -132,8 +150,7 @@ class LoadImageFromFilePIL(LoadImageFromFile):
             self.file_client = mmcv.FileClient(**self.file_client_args)
 
         if results['img_prefix'] is not None:
-            filename = osp.join(results['img_prefix'],
-                                results['img_info']['filename'])
+            filename = os.path.join(results['img_prefix'], results['img_info']['filename'])
         else:
             filename = results['img_info']['filename']
 

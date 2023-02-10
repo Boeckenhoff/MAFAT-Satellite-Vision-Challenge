@@ -1,39 +1,49 @@
-# stages:
-# patchify_images:
-#    cmd: python src/split_util/img_split.py --base-json "src/split_util/split_config.json"
-#    deps:
-#    - src/split_util/split_config.json
-#    outs:
-#    - data/split_640_640
-#  data_split:
-#    cmd: python src/train_test_split.py
-#    deps:
-#    - data/pool_data
-#    - src/data_split.py
-#    params:
-#    - base
-#    - data_split
-#    outs:
-#    - data/train_test.json
-#  train:
-#    cmd: python train.py
-#    deps:
-#    - data/annotated_dataset.zip
-#    - src/train.py
-#    params:
-#    - train.min_split
-#    - train.n_est
-#    - train.seed
-#    outs:
-#    - model.pkl
-#    metrics:
-#    - results/train/metrics.json:
-#        cache: false
-#    plots:
-#    - results/train/plots:
-#        cache: false
+stages:
+ patchify_images:
+    cmd: python3 src/split_util/img_split.py --base-json "src/split_util/split_config.json" --sizes ${dataset.sizes} --gaps ${dataset.gaps}
+    deps:
+    - src/split_util/img_split.py
+    - src/split_util/split_config.json
+    - data/minidataset
+    params:
+    - dataset.sizes
+    - dataset.gaps
+    outs:
+    - data/patchified_dataset
+ data_split:
+   cmd: python3 src/train_test_split.py --metadata-file ${split.metadata-file} --method ${split.method} --ratio ${split.ratio} --seed ${split.seed}
+   deps:
+   - src/train_test_split.py
+   - data/metadata_train.csv
+   params:
+   - split.metadata-file
+   - split.ratio
+   - split.method
+   - split.seed
+   outs:
+   - data/split/
+ train:
+    cmd: python3 src/train.py --learning-rate ${optimizer.learning_rate} --max-epochs ${optimizer.max_epochs}
+    deps:
+    - src/train.py
+    #- model_config
+    #- model_weights
+    - data/patchified_dataset
+    - data/split
+    - src/MAFAT_Dataset.py
+    params:
+    - optimizer.learning_rate
+    - optimizer.max_epochs
+    outs:
+    - model.pkl
+    metrics:
+    - results/train/metrics.json:
+        cache: false
+    plots:
+    - results/train/plots:
+        cache: false
 #  evaluate:
-#    cmd: python src/evaluate.py
+#    cmd: python3 src/evaluate.py
 #    deps:
 #    - data/test_data
 #    - models/model.pkl

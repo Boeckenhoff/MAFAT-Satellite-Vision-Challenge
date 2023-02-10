@@ -1,0 +1,5 @@
+metadata-file: '/workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv'
+ratio: 0.2
+method: 'AOI'
+seed: 42
+output-dir: '/workspaces/MAFAT-Satellite-Vision-Challenge/data/splits'

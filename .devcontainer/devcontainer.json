@@ -4,7 +4,15 @@
 	"name": "MAFAT setup",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"build": { "dockerfile": "Dockerfile" },
-	//"image": "mcr.microsoft.com/devcontainers/python:0-3.8",
+
+	"mounts": [
+        "source=${localEnv:HOME}/.aws,target=/home/vscode/.aws,type=bind,consistency=cached"
+    ],
+	"runArgs": [
+		"--gpus",
+		"all"
+	],
+	
 	"customizations": {
 	  "vscode": {
 		"extensions": ["Iterative.dvc", "ms-python.python", "redhat.vscode-yaml"]
@@ -12,19 +20,19 @@
 	},
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
-		"ghcr.io/devcontainers/features/nvidia-cuda:1": {
-			"installCudnn": true
-		},
-		"ghcr.io/iterative/features/dvc:1": {},
+		//"ghcr.io/devcontainers/features/nvidia-cuda:1": {
+		//	"installCudnn": true
+		//},
+		//"ghcr.io/iterative/features/dvc:1": {},
 		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {},
 		"ghcr.io/devcontainers-contrib/features/ffmpeg-apt-get:1": {},
 		"ghcr.io/devcontainers-contrib/features/nnn-apt-get:1": {},
 	},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.p
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "./.devcontainer/setup.sh"
+	//"postCreateCommand": "./.devcontainer/setup.sh"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
