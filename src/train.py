@@ -49,8 +49,8 @@ def add_parser(parser):
     parser.add_argument(
         '--max-epochs',
         type=int,
-        default=0.2,
-        help='the ratio of train test split')
+        default=3,
+        help='')
     
     parser.add_argument(
         '--seed',
@@ -65,31 +65,32 @@ def parse_args():
     return args
 
 
-def modify_mmdet_config(cfg, learning_rate, max_epochs):
+def modify_mmdet_config(cfg, learning_rate=1e-3, max_epochs=10):
     # # Modify dataset type and path
     cfg.dataset_type = 'MAFATDataset'
-    cfg.data_root = './'
+    cfg.data_root = './data/patchified_dataset'
 
     cfg.img_norm_cfg = dict(type='Normalize',
         mean=[795.0878, 795.0878, 795.0878], std=[460.0955, 460.0955, 460.0955], to_rgb=True)
 
     cfg.data.train.type = 'MAFATDataset'
-    cfg.data.train.data_root = os.path.join(cfg.data_root, 'train')
+    cfg.data.train.data_root = cfg.data_root
     cfg.data.train.ann_file = 'labelTxt'
     cfg.data.train.img_prefix = 'images'
     cfg.data.train.subset = 'data/split/train.csv'
     color_type='unchanged'
 
     cfg.data.test.type = 'MAFATDataset'
-    cfg.data.test.data_root = os.path.join(cfg.data_root, 'val')
+    cfg.data.test.data_root = cfg.data_root
     cfg.data.test.ann_file = 'labelTxt'
     cfg.data.test.img_prefix = 'images'
-    cfg.data.test.subset = 'data/split/train.csv'
+    cfg.data.test.subset = 'data/split/test.csv'
 
     cfg.data.val.type = 'MAFATDataset'
-    cfg.data.val.data_root = os.path.join(cfg.data_root, 'val')
+    cfg.data.val.data_root = cfg.data_root
     cfg.data.val.ann_file = 'labelTxt'
     cfg.data.val.img_prefix = 'images'
+    cfg.data.val.subset = 'data/split/test.csv'
 
     # edit pipeline to handle 16bit images
     cfg.train_pipeline[0].color_type = 'unchanged'
@@ -105,23 +106,23 @@ def modify_mmdet_config(cfg, learning_rate, max_epochs):
     cfg.model.roi_head.bbox_head[0].num_classes = len(CLASSES_ALL)
     cfg.model.roi_head.bbox_head[1].num_classes = len(CLASSES_ALL)
     # Load pre-trainied weights, trained on DOTA
-    cfg.load_from = 'redet_re50_fpn_1x_dota_ms_rr_le90-fc9217b5.pth'
+    cfg.load_from = os.path.join('./src/contents','redet_re50_fpn_1x_dota_ms_rr_le90-fc9217b5.pth')
 
     # Set up working dir to save files and logs.
     cfg.work_dir = './tutorial_exps'
 
-    cfg.optimizer.lr = 1e-3
+    cfg.optimizer.lr = learning_rate
     cfg.lr_config.warmup = None
-    cfg.runner.max_epochs = 4
+    cfg.runner.max_epochs = max_epochs
     cfg.log_config.interval = 2
 
-    cfg.data.samples_per_gpu=2
-    cfg.data.workers_per_gpu=2
+    cfg.data.samples_per_gpu=1
+    cfg.data.workers_per_gpu=1
 
     # Change the evaluation metric since we use customized dataset.
     cfg.evaluation.metric = 'mAP'
     # We can set the evaluation interval to reduce the evaluation times
-    cfg.evaluation.interval = 2
+    cfg.evaluation.interval = 1
     # We can set the checkpoint saving interval to reduce the storage cost
     cfg.checkpoint_config.interval = 1
 

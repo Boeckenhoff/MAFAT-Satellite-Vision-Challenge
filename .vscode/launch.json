@@ -15,7 +15,8 @@
             "type": "python",
             "request": "launch",
             //"args": ["--quiet", "--norepeat", "--port", "1593"],
-            "program": "src/train.py"
+            "program": "src/train.py",
+            "justMyCode": false
         }
     ]
 }

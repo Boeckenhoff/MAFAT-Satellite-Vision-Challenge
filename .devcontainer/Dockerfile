@@ -1,16 +1,29 @@
-FROM mcr.microsoft.com/devcontainers/python:0-3.8
+#FROM nvidia/cuda:10.2-cudnn7-devel-ubuntu18.04
+#mcr.microsoft.com/devcontainers/python:0-3.8
+FROM  nvidia/cuda:11.4.0-devel-ubuntu20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update 
+RUN apt-get install -y \
+    software-properties-common
+RUN add-apt-repository universe
+RUN apt-get install -y \
+    curl \
+    git \
+    python3.8 \
+    python3-pip
+
+RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-RUN git clone https://github.com/open-mmlab/mmcv.git  
-ENV MMCV_WITH_OPS=1 
-RUN python3 -m pip install -e mmcv
-
-#RUN pip3 install -U openmim && \
-#    mim install mmcv-full && \
-#    mim install mmdet
+RUN pip3 install -U openmim && \
+    mim install mmcv-full && \
+    mim install mmdet
 
 RUN git clone https://github.com/open-mmlab/mmrotate.git && \
     pip install -e /mmrotate 
-   # rm -r /mmrotate
+
+RUN pip3 install --upgrade pip
+RUN pip install dvc
