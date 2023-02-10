@@ -36,7 +36,7 @@ def add_parser(parser):
     parser.add_argument(
         '--save-dir',
         type=str,
-        default='/workspaces/MAFAT-Satellite-Vision-Challenge/data/split',
+        default='/MAFAT-Satellite-Vision-Challenge/data/split',
         help='to save ')
 
 
@@ -53,7 +53,8 @@ def main():
     args = parse_args()
     random.seed(args.seed)
 
-    metadata = pd.read_csv(args.metadata_file)
+    metadata_path = os.path.join(os.getcwd(), "data/metadata_train.csv")
+    metadata = pd.read_csv(metadata_path)
 
     if args.method == 'random':
         train, test = train_test_split(metadata, test_size=args.ratio, random_state=args.seed, stratify=metadata['AOI'])
@@ -74,9 +75,10 @@ def main():
         train = metadata.iloc[k:,:]
     train, test = train['Frame'], test['Frame']
 
-    split_name = f'{args.method}_r{args.ratio}_S{args.seed}'
+    #split_name = f'{args.method}_r{args.ratio}_S{args.seed}'
     #dir_path = os.path.join(args.save_dir, split_name)
     dir_path = args.save_dir
+    dir_path = os.path.join(os.getcwd(), "data/split")
     if not os.path.exists(dir_path):
         os.mkdir(dir_path)
     train.to_csv( os.path.join(dir_path, 'train.csv'), index=False, header=False)

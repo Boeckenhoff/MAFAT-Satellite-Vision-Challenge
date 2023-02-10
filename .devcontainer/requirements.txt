@@ -12,3 +12,4 @@ dvclive
 opencv-python
 shapely
 scikit-learn
+awscli

@@ -1,9 +1,7 @@
 from mmcv import collect_env
 from mmcv import Config
-from mmdet.apis import set_random_seed
+#from mmdet.apis import set_random_seed
 import os
-import mmcv
-collect_env()
 
 # Check MMRotate installation
 import mmrotate
@@ -12,6 +10,8 @@ print(mmrotate.__version__)
 # Check MMDetection installation
 import mmdet
 print(mmdet.__version__)
+
+import mmcv
 
 # Check mmcv installation
 from mmcv.ops import get_compiling_cuda_version, get_compiler_version
