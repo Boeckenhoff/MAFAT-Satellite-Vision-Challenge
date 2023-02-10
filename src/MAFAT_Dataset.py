@@ -1,6 +1,7 @@
 # classes in dataset
 from mmrotate.datasets.builder import ROTATED_DATASETS, PIPELINES
 from mmrotate.datasets.dota import DOTADataset
+import mmcv
 import glob
 import numpy as np
 from mmrotate.core import poly2obb_np
@@ -8,6 +9,9 @@ import os
 
 from mmdet.datasets.pipelines import LoadImageFromFile
 from PIL import Image
+
+
+import cv2
 
 
 @ROTATED_DATASETS.register_module()
@@ -146,8 +150,7 @@ class LoadImageFromFilePIL(LoadImageFromFile):
             self.file_client = mmcv.FileClient(**self.file_client_args)
 
         if results['img_prefix'] is not None:
-            filename = osp.join(results['img_prefix'],
-                                results['img_info']['filename'])
+            filename = os.path.join(results['img_prefix'], results['img_info']['filename'])
         else:
             filename = results['img_info']['filename']
 

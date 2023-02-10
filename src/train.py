@@ -1,6 +1,9 @@
+import argparse
+
+
 from mmcv import collect_env
 from mmcv import Config
-#from mmdet.apis import set_random_seed
+from mmdet.apis import set_random_seed
 import os
 
 # Check MMRotate installation
@@ -24,7 +27,13 @@ from mmdet.datasets import build_dataset
 from mmdet.models import build_detector
 from mmdet.apis import train_detector
 
+import MAFAT_Dataset
+
 import cv2
+
+CLASSES_ALL=  ('small_vehicle','bus','medium_vehicle','large_vehicle',
+     'double_trailer_truck','small_aircraft','large_aircraft','small_vessel','medium_vessel','large_vessel',
+     'heavy_equipment', 'container','pylon', )
 
 
 def add_parser(parser):
@@ -129,7 +138,7 @@ def modify_mmdet_config(cfg, learning_rate, max_epochs):
 def main():
     args = parse_args()
 
-    cfg = Config.fromfile('old.yaml')
+    cfg = Config.fromfile('src/old.yaml')
 
     modify_mmdet_config(cfg, args.learning_rate, args.max_epochs) 
 
