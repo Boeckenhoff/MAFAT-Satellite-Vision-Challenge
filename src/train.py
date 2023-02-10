@@ -77,12 +77,14 @@ def modify_mmdet_config(cfg, learning_rate, max_epochs):
     cfg.data.train.data_root = os.path.join(cfg.data_root, 'train')
     cfg.data.train.ann_file = 'labelTxt'
     cfg.data.train.img_prefix = 'images'
+    cfg.data.train.subset = 'data/split/train.csv'
     color_type='unchanged'
 
     cfg.data.test.type = 'MAFATDataset'
     cfg.data.test.data_root = os.path.join(cfg.data_root, 'val')
     cfg.data.test.ann_file = 'labelTxt'
     cfg.data.test.img_prefix = 'images'
+    cfg.data.test.subset = 'data/split/train.csv'
 
     cfg.data.val.type = 'MAFATDataset'
     cfg.data.val.data_root = os.path.join(cfg.data_root, 'val')
@@ -144,6 +146,7 @@ def main():
 
     # Build dataset
     datasets = [build_dataset(cfg.data.train)]
+    #datasets = [MAFAT_Dataset]
 
     # Build the detector
     model = build_detector( cfg.model, train_cfg=cfg.get('train_cfg'), test_cfg= cfg.get('test_cfg'))
