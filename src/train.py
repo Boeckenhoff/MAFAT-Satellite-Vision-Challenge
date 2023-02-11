@@ -28,6 +28,7 @@ from mmdet.models import build_detector
 from mmdet.apis import train_detector
 
 import MAFAT_Dataset
+import dvc_logger_hook
 
 import cv2
 
@@ -109,7 +110,7 @@ def modify_mmdet_config(cfg, learning_rate=1e-3, max_epochs=10):
     cfg.load_from = os.path.join('./src/contents','redet_re50_fpn_1x_dota_ms_rr_le90-fc9217b5.pth')
 
     # Set up working dir to save files and logs.
-    cfg.work_dir = './tutorial_exps'
+    cfg.work_dir = './models'
 
     cfg.optimizer.lr = learning_rate
     cfg.lr_config.warmup = None
@@ -135,7 +136,8 @@ def modify_mmdet_config(cfg, learning_rate=1e-3, max_epochs=10):
     # We can also use tensorboard to log the training process
     cfg.log_config.hooks = [
         dict(type='TextLoggerHook'),
-        dict(type='TensorboardLoggerHook')]
+        #dict(type='TensorboardLoggerHook'),
+        dict(type='DVCLoggerHook')]
 
 
 def main():
