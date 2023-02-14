@@ -12,7 +12,7 @@ RUN apt-get install -y \
     git \
     python3.8 \
     python3-pip
-
+RUN pip3 install --upgrade pip
 RUN pip install torch==1.12.1+cu116 torchvision==0.13.1+cu116 --extra-index-url https://download.pytorch.org/whl/cu116
 
 COPY requirements.txt requirements.txt
@@ -25,5 +25,3 @@ RUN pip3 install -U openmim && \
 RUN git clone https://github.com/open-mmlab/mmrotate.git && \
     pip install -e /mmrotate 
 
-RUN pip3 install --upgrade pip
-RUN pip install dvc
