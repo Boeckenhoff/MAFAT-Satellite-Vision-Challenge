@@ -1,65 +1,90 @@
 import argparse
+import os
 from model import model
-from mmrotate.core import eval_rbbox_map
+import numpy as np
+from mmrotate.core import eval_rbbox_map,  poly2obb_np
+from mmrotate.apis import inference_detector_by_patches
 import pandas as pd
 import cv2
+from mmrotate.core import eval_rbbox_map, obb2poly_np, poly2obb_np
 
 def parse_args():
     """Parse arguments."""
-    parser = argparse.ArgumentParser(description='Splitting dataset')
+    parser = argparse.ArgumentParser(description='Path to test dataset')
     parser.add_argument(
         '--test-dataset',
         type=str,
-        default="data/split/test",
+        default="data/split/test.csv",
         help='')
 
     parser.add_argument(
         '--model-config',
         type=str,
-        default="checkpoints/config.py",
+        default="model/mod_cfg.py",
         help='')
 
 
     parser.add_argument(
         '--model-checkpoint',
         type=str,
-        default="checkpoints/epoch_1.pth",
+        default="model/epoch_3.pth",
         help='')
 
     args = parser.parse_args()
     return args
 
-def get_og_testdataset(test):
-    with open(test) as f:
+def get_og_testdataset(test_csv, classes):
+    with open(test_csv) as f:
         filenames = f.read().splitlines() 
     
     for filename in filenames:
-        img = cv2.imread("data/labeled_dataset/images/{filename}.tiff", -1)
+        img = cv2.imread(f"data/labeled_dataset/images/{filename}.tiff", -1)
         meta = pd.read_csv("data/metadata_train.csv")
         meta = meta[ meta.Frame == filename]
         meta = meta[["Resolution", "Sun_Elevation", "Azimuth", "Sun_Azimuth"]]
-        with open("data/labeled_dataset/lblText/{filename}.txt") as f:
-            ann = f.read().splitlines() 
-        yield img, meta, ann
+        with open(f"data/labeled_dataset/labelTxt/{filename}.txt") as f:
+            anns = f.read().splitlines() 
+        bboxes = [poly2obb_np(np.array(ann.split()[:8], dtype=np.float32), version="le90") for ann in anns]
+        bboxes = np.array(bboxes) if bboxes else np.empty(shape=(0,5))
+        labels  = np.array([classes.index(ann.split()[8]) for ann in anns])
+        anns = {"bboxes": bboxes, "labels": labels}
+        yield img, meta, anns
 
+
+def convert_pre_polys_to_bboxs(polys):
+    if not polys:
+        return [np.empty(shape=(0,6))]
+    bboxes =  [np.hstack((poly2obb_np( np.float32(poly[1:]), version="le90"), poly[0])) for poly in polys]
+    bboxes =  [np.expand_dims(bbox, axis=1) for bbox in bboxes]
+    return bboxes
 
 def main():
     args = parse_args()
 
-    model = model()
-    model.checkpoint_path = args.model_checkpoint
-    model.config_path =  args.model_config
-    model.load()
+    model_ins = model()
+    model_ins.checkpoint_path = args.model_checkpoint
+    model_ins.config_path =  args.model_config
+    model_ins.load(os.getcwd())
 
-    for img, meta in  get_og_testdataset(args.test_dataset):
-        model.collect_statistics_iter(img, meta)
+    for img, meta, _ in  get_og_testdataset(args.test_dataset, model_ins.CLASSES):
+        model_ins.collect_statistics_iter(img, meta)
 
-    model.update_model()
+    model_ins.update_model()
 
-    for img, meta in  get_og_testdataset(args.test_dataset):
-        predictions = model.predict(img, meta)
-    
     annotations = []
+    predictions = []
+    results = []
+    for img, meta, ann in  get_og_testdataset(args.test_dataset, model_ins.CLASSES):
+        img = np.stack((img, )*3, axis=-1)
+        result = inference_detector_by_patches(model_ins.model, img, [640], [320], [1.0], 0.3)
+        results.append(result)
+
+        prediction = model_ins.predict(img, meta)
+        prediction = [convert_pre_polys_to_bboxs(cls_pred) for cls_pred in prediction]
+        predictions.append(prediction)
+
+        annotations.append(ann)
+
     mean_ap, _ = eval_rbbox_map(
         predictions,
         annotations,
