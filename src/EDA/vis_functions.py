@@ -10,6 +10,10 @@ from decimal import *
 import os
 import math
 
+DEFAULT_COLOR_CLASS = {'small_vehicle':'r', 'bus':'g', 'medium_vehicle':'b', 'large_vehicle':'c', 'double_trailer_truck':'m', 'container':'y',
+'pylon':'k', 'small_aircraft':'purple', 'large_aircraft':'brown', 'small_vessel':'orange', 'medium_vessel':'pink', 'large_vessel':'olive',
+               'heavy_equipment':'tab:olive'}
+
 
 def read_annotations(path_to_labelTxt):
     """
@@ -70,7 +74,7 @@ def bb_out_of_frame(annotations, start_range_frame=0, stop_range_frame=1280):
     return out_of_frame
 
 
-def anno_vis_bar(annotations):
+def anno_vis_bar(annotations, color_class=DEFAULT_COLOR_CLASS):
     """
     Visualization of total annotations per class
 
@@ -91,7 +95,7 @@ def anno_vis_bar(annotations):
     plt.title('Total annotations per class')
     plt.show()
 
-def anno_bb_out_of_frame_vis_bar(annotations):
+def anno_bb_out_of_frame_vis_bar(annotations, color_class=DEFAULT_COLOR_CLASS):
     """
     Visualization of total annotations per class that cross the frame shape.
 
@@ -111,7 +115,7 @@ def anno_bb_out_of_frame_vis_bar(annotations):
     plt.xticks(rotation=70)
 
 
-def class_per_img_hist(annotations, class_obj):
+def class_per_img_hist(annotations, class_obj, color_class=DEFAULT_COLOR_CLASS):
     """
     Visualization of number of frames per number of objects per class.
 
@@ -308,7 +312,7 @@ def heatmap_res(annotations, class_obj):
     plt.title("Resolution Distribution for each class")
     sns.heatmap(category_resolution.T)
 
-def frame_with_annotation(frame_path, ann_frame):
+def frame_with_annotation(frame_path, ann_frame, color_class=DEFAULT_COLOR_CLASS, rotation=None):
     """
     Display of the selected frame and its annotations.
 
@@ -324,6 +328,10 @@ def frame_with_annotation(frame_path, ann_frame):
     """
     try:
         img = Image.open(frame_path)
+        width = img.size[0]
+        height = img.size[1]
+        if rotation:
+            img = img.transpose(rotation)
     except:
         print("Wrong frame name")
         return
@@ -337,7 +345,23 @@ def frame_with_annotation(frame_path, ann_frame):
     for index, row in ann_frame.iterrows():
         class_color = color_class[row['category_id']]
 
-        rec_coor = [[row['x1'],row['y1']], [row['x2'],row['y2']], [row['x3'],row['y3']], [row['x4'],row['y4']]]
+        if rotation == Image.ROTATE_90:
+            rotation_matrix = np.array([[0,1], [-1,0]])
+        elif rotation == Image.ROTATE_180:
+            rotation_matrix = np.array([[-1,0], [0,-1]])
+        elif rotation == Image.ROTATE_270:
+            rotation_matrix = np.array([[0,-1], [1,-0]])
+        else:
+            rotation_matrix = np.array([[1,0], [0,1]])
+
+        center = np.array([width/2, height/2])
+
+        c1 = rotation_matrix.dot(np.array([row['x1'],row['y1']]) - center) + center
+        c2 = rotation_matrix.dot(np.array([row['x2'],row['y2']]) - center) + center
+        c3 = rotation_matrix.dot(np.array([row['x3'],row['y3']]) - center) + center
+        c4 = rotation_matrix.dot(np.array([row['x4'],row['y4']]) - center) + center
+
+        rec_coor = [c1, c2, c3, c4]
         # Create a Rectangle patch
         rect = patches.Polygon(rec_coor, linewidth=2.0,
                                 edgecolor=class_color, facecolor="none")
@@ -345,7 +369,7 @@ def frame_with_annotation(frame_path, ann_frame):
 
     plt.show()
 
-def show_frames_by_AOI(anno):
+def show_frames_by_AOI(anno, base_path):
     """
     Display of randomly sampled frames grouped by AOI.
 
@@ -365,7 +389,7 @@ def show_frames_by_AOI(anno):
     for i, (AOI, new_df) in enumerate(sampled_frames_per_AOI.groupby(level=0)):
         for j, frame_to_show in enumerate(new_df):
             ann_frame = anno[anno.Frame == frame_to_show]
-            frame_path = f"/content/images/{frame_to_show}.tiff"
+            frame_path = f"{base_path}/{frame_to_show}.tiff"
 
             img = Image.open(frame_path)
             axs[i][j].imshow(img, cmap = 'gray')
@@ -408,3 +432,28 @@ def frames_by_metadata(anno, column):
             axs[i][j].title.set_text(f"{column}: {ann_frame[column].iloc[0]:.2f}, Frame: {frame_to_show}")
 
     plt.show()
+
+def classes_heatmap(annotations, class_obj):
+    num_classes = len(class_obj)
+    count_df = pd.DataFrame(np.zeros((num_classes, num_classes)), index=class_obj, columns=class_obj)
+
+    count = annotations.groupby(['Frame', 'category_id'])['category_id'].count()
+    count = count.to_frame()
+    count = count.rename(columns ={'category_id':'count_each_class'}).reset_index()
+
+    for i in range(num_classes):
+        for j in range(i, num_classes):
+            label1 = class_obj[i]
+            label2 = class_obj[j]
+
+            s1 = count[count.category_id==label1]["Frame"]
+            s2 = count[count.category_id==label2]["Frame"]
+            
+            res = s1[s1.isin(s2)].size
+            count_df.loc[label1][label2] = res
+            count_df.loc[label2][label1] = res
+
+    plt.figure(figsize = (20,14))
+    plt.title("Number of frames which contain both classes")
+    g = sns.heatmap(count_df,  annot=True ,annot_kws={"fontsize":14},fmt=".0f", linewidth=.5, cmap='pink')
+
