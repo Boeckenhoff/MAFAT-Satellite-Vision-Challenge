@@ -53,9 +53,8 @@ def get_og_testdataset(test_csv, classes):
 
 def convert_pre_polys_to_bboxs(polys):
     if not polys:
-        return [np.empty(shape=(0,6))]
-    bboxes =  [np.hstack((poly2obb_np( np.float32(poly[1:]), version="le90"), poly[0])) for poly in polys]
-    bboxes =  [np.expand_dims(bbox, axis=1) for bbox in bboxes]
+        return np.empty(shape=(0,6))
+    bboxes =  np.vstack([np.hstack((poly2obb_np( np.float32(poly[1:]), version="le90"), poly[0])) for poly in polys])
     return bboxes
 
 def main():
@@ -73,16 +72,9 @@ def main():
 
     annotations = []
     predictions = []
-    results = []
     for img, meta, ann in  get_og_testdataset(args.test_dataset, model_ins.CLASSES):
-        img = np.stack((img, )*3, axis=-1)
-        result = inference_detector_by_patches(model_ins.model, img, [640], [320], [1.0], 0.3)
-        results.append(result)
-
         prediction = model_ins.predict(img, meta)
-        prediction = [convert_pre_polys_to_bboxs(cls_pred) for cls_pred in prediction]
-        predictions.append(prediction)
-
+        predictions.append([convert_pre_polys_to_bboxs(cls_pred) for cls_pred in prediction])
         annotations.append(ann)
 
     mean_ap, _ = eval_rbbox_map(
