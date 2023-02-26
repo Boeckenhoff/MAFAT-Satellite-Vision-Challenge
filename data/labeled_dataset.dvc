@@ -1,5 +1,5 @@
 outs:
-- md5: d751713988987e9331980363e24189ce.dir
-  size: 0
-  nfiles: 0
+- md5: d2dfe643bdcd2497213eac6ca6bbb98f.dir
+  size: 6581161235
+  nfiles: 2916
   path: labeled_dataset

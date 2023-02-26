@@ -4,25 +4,25 @@ stages:
     cmd: python3 src/split_util/img_split.py --base-json "src/split_util/split_config.json"
       --sizes 640 --gaps 320
     deps:
-    - path: data/minidataset
-      md5: 8b6d42de6ed6cf79a72895108378ad03.dir
-      size: 20159955
-      nfiles: 16
+    - path: data/labeled_dataset
+      md5: d2dfe643bdcd2497213eac6ca6bbb98f.dir
+      size: 6581161235
+      nfiles: 2916
     - path: src/split_util/img_split.py
       md5: 89125a6f0423cb93e6d3ede78541c6e0
       size: 19304
     - path: src/split_util/split_config.json
-      md5: fbcdcd876ac4f3591ce056cf22cdefd3
-      size: 425
+      md5: 5028e2f7947665c92285fd47845beb4b
+      size: 433
     params:
       params.yaml:
         dataset.gaps: 320
         dataset.sizes: 640
     outs:
     - path: data/patchified_dataset
-      md5: 9f37dd1061038e8df656331b2154b7f8.dir
-      size: 45170045
-      nfiles: 145
+      md5: bf355719c484249cb0a1f523a224f81f.dir
+      size: 7502448129
+      nfiles: 26227
   data_split:
     cmd: python3 src/train_test_split.py --metadata-file /workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv
       --method AOI --ratio 0.2 --seed 42

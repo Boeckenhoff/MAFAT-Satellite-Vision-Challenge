@@ -4,7 +4,7 @@ stages:
     deps:
     - src/split_util/img_split.py
     - src/split_util/split_config.json
-    - data/minidataset
+    - data/labeled_dataset
     params:
     - dataset.sizes
     - dataset.gaps

@@ -11,3 +11,4 @@ shapely
 scikit-learn
 awscli
 tensorboard
+dvc_s3

@@ -1,10 +1,10 @@
 {
     "nproc": 1,
     "img_dirs": [
-      "data/minidataset/images"
+      "data/labeled_dataset/images"
     ],
     "ann_dirs": [
-      "data/minidataset/labelTxt"
+      "data/labeled_dataset/labelTxt"
     ],
     "sizes": [
       640
