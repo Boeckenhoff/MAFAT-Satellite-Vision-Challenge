@@ -25,8 +25,6 @@
 		//},
 		//"ghcr.io/iterative/features/dvc:1": {},
 		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {},
-		"ghcr.io/devcontainers-contrib/features/ffmpeg-apt-get:1": {},
-		"ghcr.io/devcontainers-contrib/features/nnn-apt-get:1": {},
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.p
 	// "forwardPorts": [],

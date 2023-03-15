@@ -16,8 +16,8 @@ class model():
      'double_trailer_truck','small_aircraft','large_aircraft','small_vessel','medium_vessel','large_vessel',
      'heavy_equipment', 'container','pylon', ) # MAFAT classes
         self.stats = []
-        self.checkpoint_path = r"latest.pth"
-        self.config_path = r"my_config_redet.py"
+        self.checkpoint_path = r"../models/initial_submission.pth"
+        self.config_path = r"config.py"
         # Initialize variables to store the running sum and square sum of pixel values
         self.running_sum = 0
         self.running_square_sum = 0

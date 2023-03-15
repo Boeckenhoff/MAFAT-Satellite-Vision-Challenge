@@ -12,4 +12,4 @@ model:
   pretrained: work_dirs/pretrain/re_resnet50_c8_batch256-25b16846.pth
 optimizer:
   learning_rate: 0.001
-  max_epochs: 4
+  max_epochs: 10

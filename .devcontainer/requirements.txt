@@ -4,10 +4,11 @@ prettytable
 matplotlib
 pillow
 numpy
-dvc=2.43.4
+dvc==2.43.4
+dvc_s3
 dvclive
 opencv-python
 shapely
 scikit-learn
-awscli
+# awscli
 tensorboard

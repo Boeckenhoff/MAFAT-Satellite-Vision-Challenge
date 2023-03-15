@@ -24,7 +24,7 @@ def add_parser(parser):
     parser.add_argument(
         '--method',
         type=str,
-        default='AOI',
+        default='random',
         help='the attribute to split the dataset by')
     
     parser.add_argument(

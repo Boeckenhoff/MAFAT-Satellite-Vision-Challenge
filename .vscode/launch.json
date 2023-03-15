@@ -9,13 +9,21 @@
             "request": "launch",
             "name": "Launch Experiment Remote",
             "program": "run_batch_training.py"
-        }
+        },
         {
             "name": "Debug train",
             "type": "python",
             "request": "launch",
             //"args": ["--quiet", "--norepeat", "--port", "1593"],
             "program": "src/train.py",
+            "justMyCode": false
+        },
+        {
+            "name": "Debug train test split",
+            "type": "python",
+            "request": "launch",
+            //"args": ["--quiet", "--norepeat", "--port", "1593"],
+            "program": "src/train_test_split.py",
             "justMyCode": false
         }
     ]

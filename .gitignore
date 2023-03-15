@@ -1,0 +1,7 @@
+/eval
+src/submission/*
+!src/submission/metadata
+src/contents/*.pth
+
+__pycache__
+

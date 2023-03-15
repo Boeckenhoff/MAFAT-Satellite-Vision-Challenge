@@ -20,8 +20,13 @@ RUN pip3 install -r requirements.txt
 
 RUN pip3 install -U openmim && \
     mim install mmcv-full && \
-    mim install mmdet
+    mim install mmdet && \
+    mim install mmengine
 
 RUN git clone https://github.com/open-mmlab/mmrotate.git && \
     pip install -e /mmrotate 
 
+RUN mkdir -p ./src/contents && \
+    mim download mmrotate --config redet_re50_refpn_1x_dota_ms_rr_le90 --dest ./src/contents
+
+RUN pip install awscli

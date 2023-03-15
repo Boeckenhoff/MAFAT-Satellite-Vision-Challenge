@@ -25,22 +25,22 @@ stages:
       nfiles: 145
   data_split:
     cmd: python3 src/train_test_split.py --metadata-file /workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv
-      --method AOI --ratio 0.2 --seed 42
+      --method random --ratio 0.2 --seed 42
     deps:
     - path: data/metadata_train.csv
       md5: 4be22f54bfcdad4428a17f5c18d20e6d
       size: 124640
     - path: src/train_test_split.py
-      md5: 9586dd2a0df69d250af30e91684443a7
-      size: 2627
+      md5: 5c33e427e2649d261206e6032fa09625
+      size: 2963
     params:
       params.yaml:
         split.metadata-file: /workspaces/MAFAT-Satellite-Vision-Challenge/data/metadata_train.csv
-        split.method: AOI
+        split.method: random
         split.ratio: 0.2
         split.seed: 42
     outs:
     - path: data/split/
-      md5: bf94c79dcfb857a391a8a254564a9d7e.dir
+      md5: ed1747008fbcda1eff6839c8d84ab04c.dir
       size: 21154
       nfiles: 2

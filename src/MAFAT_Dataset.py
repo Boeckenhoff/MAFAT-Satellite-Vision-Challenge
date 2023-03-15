@@ -37,7 +37,7 @@ class MAFATDataset(DOTADataset):
         super(MAFATDataset, self).__init__( ann_file, pipeline, **kwargs )
         #super(self).__init__(ann_file, pipeline, **kwargs)
     
-    def load_annotations(self, ann_folder):
+    def load_annotations(self, ann_folder="data/patchified_dataset/annfiles"):
         """
             Args:
                 ann_folder: folder that contains DOTA v1 annotations txt files
@@ -46,7 +46,7 @@ class MAFATDataset(DOTADataset):
                    for i, c in enumerate(self.CLASSES)
                    }  # in mmdet v2.0 label is 0-based
         
-        ann_files = [path for prefix in self.subset for path in glob.glob(f'data/patchified_dataset/labelTxt/{prefix}*.txt') ]
+        ann_files = [path for prefix in self.subset for path in glob.glob(f'{ann_folder}/{prefix}*.txt') ]
         data_infos = []
         if not ann_files:  # test phase
             ann_files = glob.glob(ann_folder + '/*.tiff')
